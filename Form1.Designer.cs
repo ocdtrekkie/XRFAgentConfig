@@ -41,6 +41,7 @@
             LoadBtn = new Button();
             label6 = new Label();
             lblServiceStatus = new Label();
+            InstallBtn = new Button();
             SuspendLayout();
             // 
             // label1
@@ -162,11 +163,23 @@
             lblServiceStatus.TabIndex = 12;
             lblServiceStatus.Text = "Service Status";
             // 
+            // InstallBtn
+            // 
+            InstallBtn.Location = new Point(503, 315);
+            InstallBtn.Name = "InstallBtn";
+            InstallBtn.Size = new Size(75, 23);
+            InstallBtn.TabIndex = 13;
+            InstallBtn.Text = "Install";
+            InstallBtn.UseVisualStyleBackColor = true;
+            InstallBtn.Visible = false;
+            InstallBtn.Click += InstallBtn_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(590, 357);
+            Controls.Add(InstallBtn);
             Controls.Add(lblServiceStatus);
             Controls.Add(label6);
             Controls.Add(LoadBtn);
@@ -202,5 +215,6 @@
         private Button LoadBtn;
         private Label label6;
         private Label lblServiceStatus;
+        private Button InstallBtn;
     }
 }

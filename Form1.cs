@@ -1,4 +1,7 @@
 using SQLite;
+using System.Diagnostics;
+using System.IO.Compression;
+using System.Net;
 using System.ServiceProcess;
 
 namespace XRFAgentConfig
@@ -14,6 +17,18 @@ namespace XRFAgentConfig
             Sync_ServerURL.Text = GetConfig("Sync_ServerURL");
             Sync_SandstormToken.Text = GetConfig("Sync_SandstormToken");
             Sync_AccessKey.Text = GetConfig("Sync_AccessKey");
+        }
+
+        private string CheckInstall()
+        {
+            if (File.Exists(@"C:\Program Files\XRFAgent\XRFAgent.exe"))
+            {
+                return "Agent present";
+            }
+            else
+            {
+                return "Agent not present";
+            }
         }
 
         private string CheckService()
@@ -50,7 +65,7 @@ namespace XRFAgentConfig
                 }
                 return status;
             }
-            catch (ArgumentException)
+            catch (InvalidOperationException)
             {
                 return "Not installed";
             }
@@ -103,7 +118,12 @@ namespace XRFAgentConfig
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            Directory.CreateDirectory(@"C:\HAC");
             OpenConfigTable();
+            if (CheckInstall() == "Agent not present")
+            {
+                InstallBtn.Visible = true;
+            }
             lblServiceStatus.Text = "Agent Service: " + CheckService();
         }
 
@@ -128,6 +148,39 @@ namespace XRFAgentConfig
             HttpResponseMessage heartbeatResponse = await heartbeatClient.SendAsync(heartbeatMessage);
 
             MessageBox.Show("Saved", "Configuration values have been saved", MessageBoxButtons.OK);
+        }
+
+        private void InstallBtn_Click(object sender, EventArgs e)
+        {
+            WebClient UpdateDownloadClient = new WebClient();
+            int latestVersion = -1;
+            try
+            {
+                try
+                {
+                    Directory.Delete(@"C:\HAC\scripts\agenttemp", true);
+                }
+                catch (DirectoryNotFoundException)
+                {
+                    // this is fine
+                }
+                Directory.CreateDirectory(@"C:\HAC\scripts\agenttemp");
+                latestVersion = int.Parse(UpdateDownloadClient.DownloadString("https://hac.jacobweisz.com/dl/currentagent.txt"));
+                string agentFile = "agent" + latestVersion + ".zip";
+                UpdateDownloadClient.DownloadFile("https://hac.jacobweisz.com/dl/" + agentFile, @"C:\HAC\scripts\" + agentFile);
+                ZipFile.ExtractToDirectory(@"C:\HAC\scripts\" + agentFile, @"C:\HAC\scripts\agenttemp");
+                File.Delete(@"C:\HAC\scripts\" + agentFile);
+                Process Installer = new Process();
+                Installer.StartInfo.UseShellExecute = true;
+                Installer.StartInfo.Verb = "runas";
+                Installer.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                Installer.StartInfo.FileName = AppDomain.CurrentDomain.BaseDirectory + "agentinstall.bat";
+                Installer.Start();
+            }
+            catch (Exception err)
+            {
+                // handle this somehow
+            }
         }
     }
 }
