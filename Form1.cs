@@ -1,4 +1,5 @@
 using SQLite;
+using System.ServiceProcess;
 
 namespace XRFAgentConfig
 {
@@ -13,6 +14,46 @@ namespace XRFAgentConfig
             Sync_ServerURL.Text = GetConfig("Sync_ServerURL");
             Sync_SandstormToken.Text = GetConfig("Sync_SandstormToken");
             Sync_AccessKey.Text = GetConfig("Sync_AccessKey");
+        }
+
+        private string CheckService()
+        {
+            try
+            {
+                ServiceController scAgent = new ServiceController("XRFAgent");
+                string status;
+                switch (scAgent.Status)
+                {
+                    case ServiceControllerStatus.Running:
+                        status = "Running"; break;
+                    case ServiceControllerStatus.Stopped:
+                        status = "Stopped"; break;
+                    case ServiceControllerStatus.Paused:
+                        status = "Paused"; break;
+                    case ServiceControllerStatus.StopPending:
+                        status = "Stopping"; break;
+                    case ServiceControllerStatus.StartPending:
+                        status = "Starting"; break;
+                    default:
+                        status = "Status Changing"; break;
+                }
+                switch (scAgent.StartType)
+                {
+                    case ServiceStartMode.Automatic:
+                        status = status + " (Automatic)"; break;
+                    case ServiceStartMode.Disabled:
+                        status = status + " (Disabled)"; break;
+                    case ServiceStartMode.Manual:
+                        status = status + " (Manual)"; break;
+                    default:
+                        status = status + " (Unknown)"; break;
+                }
+                return status;
+            }
+            catch (ArgumentException)
+            {
+                return "Not installed";
+            }
         }
 
         [Table("CONFIG")]
@@ -63,6 +104,7 @@ namespace XRFAgentConfig
         private void Form1_Load(object sender, EventArgs e)
         {
             OpenConfigTable();
+            lblServiceStatus.Text = "Agent Service: " + CheckService();
         }
 
         private void LoadBtn_Click(object sender, EventArgs e)

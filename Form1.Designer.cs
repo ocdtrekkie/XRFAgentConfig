@@ -40,6 +40,7 @@
             SaveBtn = new Button();
             LoadBtn = new Button();
             label6 = new Label();
+            lblServiceStatus = new Label();
             SuspendLayout();
             // 
             // label1
@@ -152,11 +153,21 @@
             label6.TabIndex = 11;
             label6.Text = "Sync";
             // 
+            // lblServiceStatus
+            // 
+            lblServiceStatus.AutoSize = true;
+            lblServiceStatus.Location = new Point(12, 319);
+            lblServiceStatus.Name = "lblServiceStatus";
+            lblServiceStatus.Size = new Size(79, 15);
+            lblServiceStatus.TabIndex = 12;
+            lblServiceStatus.Text = "Service Status";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(590, 300);
+            ClientSize = new Size(590, 357);
+            Controls.Add(lblServiceStatus);
             Controls.Add(label6);
             Controls.Add(LoadBtn);
             Controls.Add(SaveBtn);
@@ -190,5 +201,6 @@
         private Button SaveBtn;
         private Button LoadBtn;
         private Label label6;
+        private Label lblServiceStatus;
     }
 }
