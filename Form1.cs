@@ -23,10 +23,14 @@ namespace XRFAgentConfig
         {
             if (File.Exists(@"C:\Program Files\XRFAgent\XRFAgent.exe"))
             {
+                InstallBtn.Visible = false;
+                lblServiceStatus.Text = "Agent Service: " + CheckService();
                 return "Agent present";
             }
             else
             {
+                InstallBtn.Visible = true;
+                lblServiceStatus.Text = "Agent Service: Not installed";
                 return "Agent not present";
             }
         }
@@ -120,11 +124,13 @@ namespace XRFAgentConfig
         {
             Directory.CreateDirectory(@"C:\HAC");
             OpenConfigTable();
-            if (CheckInstall() == "Agent not present")
-            {
-                InstallBtn.Visible = true;
-            }
-            lblServiceStatus.Text = "Agent Service: " + CheckService();
+
+            Bitmap shieldIcon = new Bitmap(System.Drawing.SystemIcons.Shield.ToBitmap(), new Size(14,14));
+            InstallBtn.Image = shieldIcon;
+            InstallBtn.ImageAlign = ContentAlignment.MiddleLeft;
+            InstallBtn.TextImageRelation = TextImageRelation.ImageBeforeText;
+
+            CheckInstall();
         }
 
         private void LoadBtn_Click(object sender, EventArgs e)
@@ -176,6 +182,16 @@ namespace XRFAgentConfig
                 Installer.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 Installer.StartInfo.FileName = AppDomain.CurrentDomain.BaseDirectory + "agentinstall.bat";
                 Installer.Start();
+                Thread.Sleep(2000);
+                CheckInstall();
+                Thread.Sleep(2000);
+                CheckInstall();
+                Thread.Sleep(2000);
+                CheckInstall();
+                Thread.Sleep(2000);
+                CheckInstall();
+                Thread.Sleep(2000);
+                CheckInstall();
             }
             catch (Exception err)
             {
